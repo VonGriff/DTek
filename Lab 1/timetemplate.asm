@@ -21,8 +21,8 @@ main:
 	# print timstr
 	la	$a0,timstr
 	li	$v0,4
-	syscall
-	nop
+	syscall	
+	nop	
 	# wait a little
 	li	$a0,2
 	jal	delay
@@ -86,43 +86,61 @@ hexasc:
 	addiu $v0,$a0,0x30 	#$v0 = $a0+0x30
 	
 	jr $ra			# done here, return
+	nop
 letters:
 	addiu $v0,$a0,0x37	#10-15 -> 'A'-'F'
 	
 	jr $ra			# done here, return
 	
 delay:
+	addi $a0,$a0,-1
+	add $t0,$zero,$zero
+	
+	loop:
+		addi $t0,$t0,1
+		bne $t0,4711,loop
+
+	bne $a0,$zero,delay
 	jr $ra
 	nop
 	
 time2string:
 	# a0 output, a1 16 LSB that represents current time.
-	PUSH $ra #store to be able to recurse deeper
+	PUSH $ra #store to be able to go deeper
+	move $t3,$a0
 	
-	move $a0,$a1 #andra sekund
-	jal hexasc
-	#$t0[4] = $v0
+	#andra sekund
+	move $a0,$a1 	#a0 = a1
+	jal hexasc	#take last 4 
+	move $t1, $v0	#$t0[4] = $v0
+	sb $t2,($t3)
 	
 	srl $a0,$a1,4 #första sekund
 	jal hexasc
 	#$t0 = $v0 -> sll $t0 8
+	move $t2,$v0
+	sll $t2,$t2,8
 
 	
 	#add colon 0x3A
-	add $t0,$t0,0x3A
-	sll $t0,4
+	addi $t2,$t2,0x3A
+	sll $t2,$t2,8
 	
 	srl $a0,$a1,8 #andra minut
 	jal hexasc
-	
+	add $t2,$v0,$t2 # t0+=v0
+	sll $t2,$t2,8
 	
 	srl $a0,$a1,12 #första minut
 	jal hexasc
+	add $t2,$v0,$t2 # t0+=v0
 	
-	
-	
-	
-	
+	#addi $t3,$t3,1	
+	sw $t2,($t3)
+	sw $t1,4($t3)
 	#write minutes
 	#write second
 	#0x00 
+	POP $ra
+	jr $ra
+	nop
