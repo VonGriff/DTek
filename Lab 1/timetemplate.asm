@@ -113,43 +113,52 @@ return:
 time2string:
 	# a0 output, a1 16 LSB that represents current time.
 	PUSH $ra #store to be able to go deeper
-	move $t3,$a0
+	PUSH $s0
+	PUSH $s1
+	PUSH $s2
+	move $s0,$a0
 	
 	#andra sekund
 	move $a0,$a1 	#a0 = a1
 	jal hexasc	#take last 4 bits and convert to number
 	nop
-	move $t1, $v0	#$t0[4] = $v0
+	move $s2, $v0	#$t0[4] = $v0
 	
-	
-	srl $a0,$a1,4 #första sekund
+	srl $a0,$a1,4 #fï¿½rsta sekund
 	jal hexasc
 	nop
-	move $t2,$v0
-	sll $t2,$t2,8
-
+	move $s1,$v0
+	sll $s1,$s1,8
 	
 	#add colon 0x3A
-	addi $t2,$t2,0x3A
-	sll $t2,$t2,8
+	addi $s1,$s1,0x3A
+	sll $s1,$s1,8
 	
 	srl $a0,$a1,8 #andra minut
 	jal hexasc
 	nop
-	add $t2,$v0,$t2 # t0+=v0
-	sll $t2,$t2,8
+	add $s1,$v0,$s1 # t0+=v0
+	sll $s1,$s1,8
 	
-	srl $a0,$a1,12 #första minut
+	srl $a0,$a1,12 #forsta minut
 	jal hexasc
 	nop
-	add $t2,$v0,$t2 # t0+=v0
+	add $s1,$v0,$s1 # t0+=v0
 	
-	#addi $t3,$t3,1	
-	sw $t2,($t3)
-	sw $t1,4($t3)
+	bne $s2,0x00000032,WRITE
+	nop
+	
+	li $s2,0x004F5754 #t1 = \0 O W T 
+	
+WRITE:	
+	sw $s1,($s0)
+	sw $s2,4($s0)
 	#write minutes
 	#write second
 	#0x00 
+	POP $s2
+	POP $s1
+	POP $s0
 	POP $ra
 	jr $ra
 	nop
