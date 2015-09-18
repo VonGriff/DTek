@@ -18,13 +18,14 @@ mytime:	.word 0x5957
 timstr:	.ascii "text more text lots of text\0"
 	.text
 main:
+	addi $t7,$zero,-1
 	# print timstr
 	la	$a0,timstr
 	li	$v0,4
 	syscall	
 	nop	
 	# wait a little
-	li	$a0,2
+	li	$a0,1000 #ms to wait
 	jal	delay
 	nop
 	# call tick
@@ -82,7 +83,7 @@ hexasc:
 	sltiu $t0,$a0,10	# $t0 = $a0<10
 	
 	bne $t0,1,letters	# if $t0 != 1 jump (A-F)
-	
+	nop
 	addiu $v0,$a0,0x30 	#$v0 = $a0+0x30
 	
 	jr $ra			# done here, return
@@ -91,18 +92,23 @@ letters:
 	addiu $v0,$a0,0x37	#10-15 -> 'A'-'F'
 	
 	jr $ra			# done here, return
+	nop
 	
 delay:
-	addi $a0,$a0,-1
-	add $t0,$zero,$zero
-	
-	loop:
-		addi $t0,$t0,1
-		bne $t0,4711,loop
+	ble $a0,$zero,return #return if $a0 <= 0 	###
+	nop 						##
+	addi $a0,$a0,-1					##
+	add $t0,$zero,$zero # $t0 = 0			##
+	loop:						##
+		beq $t0,100,delay			#*176# 352
+		nop					#*175# 350
+		addi $t0,$t0,1				#*175#	.
+		j loop					#*175#	.
+		nop					#*175# 350
 
-	bne $a0,$zero,delay
-	jr $ra
-	nop
+return:
+	jr $ra						#
+	nop						#
 	
 time2string:
 	# a0 output, a1 16 LSB that represents current time.
@@ -111,13 +117,14 @@ time2string:
 	
 	#andra sekund
 	move $a0,$a1 	#a0 = a1
-	jal hexasc	#take last 4 
+	jal hexasc	#take last 4 bits and convert to number
+	nop
 	move $t1, $v0	#$t0[4] = $v0
-	sb $t2,($t3)
+	
 	
 	srl $a0,$a1,4 #första sekund
 	jal hexasc
-	#$t0 = $v0 -> sll $t0 8
+	nop
 	move $t2,$v0
 	sll $t2,$t2,8
 
@@ -128,11 +135,13 @@ time2string:
 	
 	srl $a0,$a1,8 #andra minut
 	jal hexasc
+	nop
 	add $t2,$v0,$t2 # t0+=v0
 	sll $t2,$t2,8
 	
 	srl $a0,$a1,12 #första minut
 	jal hexasc
+	nop
 	add $t2,$v0,$t2 # t0+=v0
 	
 	#addi $t3,$t3,1	

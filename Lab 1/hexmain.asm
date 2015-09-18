@@ -31,8 +31,9 @@ hexasc:
 	addiu $v0,$a0,0x30 	#$v0 = $a0+0x30
 	
 	jr $ra			# done here, return
+	nop
 letters:
 	addiu $v0,$a0,0x37	#10-15 -> 'A'-'F'
 	
 	jr $ra			# done here, return
-
+	nop
