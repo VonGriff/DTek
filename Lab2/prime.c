@@ -5,9 +5,25 @@
  This file is in the public domain.
 */
 
+//Kod skriven av Johan Keck
 
 #include <stdio.h>
+/*
+Bajsinvecklad funktion
+Basically:
+	if n<2 return 0
+	if n < 4 return 1
+	if n > 4 
+		for i-> n      	<-------------\
+			if n not divisible by i --/
+			if n divisible by i return 0
+		No i (0<i<n) was a divisor to n -> is prime, return 1
 
+	if n = 4 return 0
+
+	Sluta spaghettikoda så jäkla mycket!
+
+*/
 int is_prime(int n){
 	int i;
 	if(n<2) {} //1, 0 eller negativa nummer sorteras bort
