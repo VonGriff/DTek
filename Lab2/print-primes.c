@@ -12,23 +12,21 @@
 #define COLUMNS 6
 
 int is_prime(int n){
+  if (n < 2) //if n is negative, 0 or 1 then it's not a prime 
+    return 0;
+  int max = sqrt(n);
+
   int i;
-  if(n<2) {} //1, 0 eller negativa tal sorteras bort
-  else if(n<4) //Om n är 2 eller 3 är de primtal
-    return 1;
-  else if(n>4) { //Om n är större än 4, kör for loop då 4 ej är ett primtal
-    for(i=3; i<n; i++) {
-      if(n%i != 0) //Om n ej är jämt delbar med i, fortsätt
-        continue;
+  for(i = 2; i <= max; i++) {
+    if (n%i == 0)
       return 0;
-    }
-    return 1;
   }
-  return 0;
+  return 1;
 }
 
 void print_number(int n) {
   //Här händer grejer
+  //TODO: add whitespace
   printf("%10d", n);
 }
 
