@@ -12,8 +12,8 @@
 char* text1 = "This is a string.";
 char* text2 = "Yet another thing.";
 
-int list1[20]; //(int*) malloc(80);
-int list2[20]; // = (int*) malloc(80);
+int list1[20]; 
+int list2[20]; 
 
 int count = 0;
 
@@ -71,7 +71,7 @@ work(void) {
   beq $t0,$0,done
 
   addi  $a0,$a0,1 a0++
-  addi  $a1,$a1,4 a1+=4
+  addi  $a1,$a1,4 a1+=4 - it's an int though so a1++
   
   lw  $t1,0($a2) t1 = *a2     |
   addi  $t1,$t1,1 t1+=1       | *a2 +=1
@@ -81,8 +81,7 @@ work(void) {
 copycodes(char* a0,int* a1) {
   while (*a0 != 0) {
     *a1 = *a0;
-    printf("%c\n",*a1 );
-    if (a1 != 0) {
+    if (*a1 != 0) {
       a0++;
       a1++;
 

@@ -2,37 +2,41 @@
 #include <stdlib.h>
 #include <math.h>
 
+//Kod skriven av Johan Käck
+//i grupp med Alexander Viklund
+
 typedef char bool;
 
 #define TRUE 1
 #define FALSE 0
 #define COLUMNS 6
 
+int c = 0;
+
 void print_number(int n) {
 	//Här händer grejer
 	printf("%10d", n);
+	c++;
+	if(c == COLUMNS) {
+		printf("\n");
+		c = 0;
+	}
 }
 
-int print_sieves(int n) { 	//8 382 224 är största talet Johans dator klarar 
-							//(segmentation fault: 11), görs på ca 0,5 s.
+int print_sieves(int n) { 	//Nära 300 000 000 under 10 sekunder
+							//ca 50 000 000 under 2 sekunder
 	if(n < 2)		//Om mindre än 2, negativt tal eller ej primtal
 		return 0;
 
 	int *sieves = &n;
 	//bool sieves[n];
 	int i;
-	int c = 0;
 	int max = sqrt(n);
 
 	sieves = malloc(n*sizeof(int));
 	if(sieves == NULL)
 		printf("ERROR: out of memory. \n");
 	else {
-
-		/*for(i = 0; i < n; i++) {
-			primes[i] = TRUE
-		}*/
-
 		for(i = 2; i < n; i++) { //Sätter alla index från 2 - n till 1
 			sieves[i] = TRUE;
 		}
@@ -50,11 +54,6 @@ int print_sieves(int n) { 	//8 382 224 är största talet Johans dator klarar
 		for(i = 2; i < n; i++) {
 			if(sieves[i]) {
 				print_number(i);
-				c++;
-				if(c == COLUMNS) {
-					printf("\n");
-					c = 0;
-				}
 			}
 		}
 	}

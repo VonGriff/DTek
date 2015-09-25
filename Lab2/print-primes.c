@@ -5,11 +5,16 @@
  This file is in the public domain.
 */
 
+//Kod skriven av Johan Käck
+//i grupp med Alexander Viklund
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define COLUMNS 6
+
+int c = 0;
 
 int is_prime(int n){
   if (n < 2) //if n is negative, 0 or 1 then it's not a prime 
@@ -26,26 +31,26 @@ int is_prime(int n){
 
 void print_number(int n) {
   //Här händer grejer
-  //TODO: add whitespace
   printf("%10d", n);
+  c++;                //Inkrementerar c varje gång vi får ett primtal
+  if(c == COLUMNS) {  //Printar ny rad då c uppnått antalet COLUMNS och återställer till 0
+    printf("\n");
+    c = 0;
+  }
 }
 
-void print_primes(int n){
+void print_primes(int n){ // Klarar ca 110 000 på 2 sekunder
   // Should print out all prime numbers less than 'n'
   // with the following formatting. Note that
   // the number of columns is stated in the define
   // COLUMNS
 
-  int i, c=0;
+  int i;
 
-  for(i=1; i<n; i++) {
+  for(i=2; i<n; i++) {
     if(is_prime(i)) {
       print_number(i);
-      c++;                //Inkrementerar c varje gång vi får ett primtal
-      if(c == COLUMNS) {  //Printar ny rad då c uppnått antalet COLUMNS och återställer till 0
-        printf("\n");
-        c = 0;
-      }
+
     }
   }
 
