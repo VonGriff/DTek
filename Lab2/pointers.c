@@ -61,8 +61,8 @@ int main(void){
   POP ($ra)
 */
 work(void) {
-  copycodes(text1, list1);
-  copycodes(text2, list2);
+  copycodes(text1, list1, &count);
+  copycodes(text2, list2, &count);
  }
 
 /*
@@ -78,14 +78,14 @@ work(void) {
   sw  $t1,0,($a2) *a2 = t1    |
   j loop
 */
-copycodes(char* a0,int* a1) {
+copycodes(char* a0,int* a1, int* a2) {
   while (*a0 != 0) {
     *a1 = *a0;
     if (*a1 != 0) {
       a0++;
       a1++;
 
-      count++;
+      *a2 = *a2 + 1;
     }
   }
 }

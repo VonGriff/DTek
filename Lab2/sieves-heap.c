@@ -29,7 +29,6 @@ int print_sieves(int n) { 	//Nära 300 000 000 under 10 sekunder
 		return 0;
 
 	int *sieves = &n;
-	//bool sieves[n];
 	int i;
 	int max = sqrt(n);
 
