@@ -29,6 +29,8 @@ void labinit( void )
 {
   volatile int* trise = (int*) 0xbf886100;
   *trise = *trise & 0xFFFFFF00; //set the last 8 bits to 0.
+  TRISD = TRISD & 0xF01F;
+  TRISD += 0xFE0;
   return;
 }
 
