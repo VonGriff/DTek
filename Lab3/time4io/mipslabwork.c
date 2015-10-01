@@ -38,11 +38,10 @@ void labinit( void )
 void labwork( void )
 {
   volatile int* porte = (int*) 0xbf886110;
-  
+
   delay( 1000 );
   time2string( textstring, mytime );
   display_string( 3, textstring );
-  *porte = ticks;
   display_update();
   *porte = *porte + 1;
   tick( &mytime );
