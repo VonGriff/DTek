@@ -42,6 +42,29 @@ void labwork( void )
   volatile int* porte = (int*) 0xbf886110;
 
   delay( 1000 );
+  int btns = getbtns();
+  if (btns>0) {
+    if (btns > 3) {//btn 4 is pressed
+        sw = getsw();
+        sw = sw << 12;
+        mytime = mytime & 0x0FFF;
+        mytime += sw;
+    }
+    btns = btns & 3;
+    if (btns > 1) {//btn 3 is pressed
+        sw = getsw();
+        sw = sw << 8;
+        mytime = mytime & 0xF0FF;
+        mytime += sw;
+    }
+    btns = btns & 1;
+    if (btns == 1) {//btn 2 is pressed
+        sw = getsw();
+        sw = sw << 4;
+        mytime = mytime & 0xFF0F;
+        mytime += sw;
+    }
+  }
   time2string( textstring, mytime );
   display_string( 3, textstring );
   display_update();
