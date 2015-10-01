@@ -29,7 +29,7 @@ void user_isr( void )
 void labinit( void )
 {
   volatile char* trise = (char*) 0xbf886100;
-  *trise = 0xFF; //set the last 8 bits to 1. It's little endian
+  *trise = *trise & 0xFFFFFF00; //set the last 8 bits to 0.
   return;
 }
 
@@ -39,13 +39,12 @@ void labinit( void )
 void labwork( void )
 {
   volatile char* porte = (char*) 0xbf886110;
-
   delay( 1000 );
   time2string( textstring, mytime );
   display_string( 3, textstring );
   *porte = ticks;
   display_update();
+  *porte = *porte + 1;
   tick( &mytime );
-  ticks++;
   display_image(96, icon);
 }
