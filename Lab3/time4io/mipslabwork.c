@@ -15,7 +15,6 @@
 #include "mipslab.h"  /* Declatations for these labs */
 
 int mytime = 0x5957;
-unsigned char ticks = 0;
 
 char textstring[] = "text, more text, and even more text!";
 
@@ -28,7 +27,7 @@ void user_isr( void )
 /* Lab-specific initialization goes here */
 void labinit( void )
 {
-  volatile char* trise = (char*) 0xbf886100;
+  volatile int* trise = (int*) 0xbf886100;
   *trise = *trise & 0xFFFFFF00; //set the last 8 bits to 0.
   return;
 }
@@ -38,7 +37,8 @@ void labinit( void )
 /* This function is called repetitively from the main program */
 void labwork( void )
 {
-  volatile char* porte = (char*) 0xbf886110;
+  volatile int* porte = (int*) 0xbf886110;
+  
   delay( 1000 );
   time2string( textstring, mytime );
   display_string( 3, textstring );
