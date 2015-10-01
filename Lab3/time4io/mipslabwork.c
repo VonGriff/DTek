@@ -28,8 +28,8 @@ void user_isr( void )
 /* Lab-specific initialization goes here */
 void labinit( void )
 {
-  volatile char* trise =  0xbf886100;
-  trise* = 0xFF; //set the last 8 bits to 1. It's little endian
+  volatile char* trise = (char*) 0xbf886100;
+  *trise = 0xFF; //set the last 8 bits to 1. It's little endian
   return;
 }
 
@@ -38,12 +38,12 @@ void labinit( void )
 /* This function is called repetitively from the main program */
 void labwork( void )
 {
-  volatile char* porte = 0xbf886110;
+  volatile char* porte = (char*) 0xbf886110;
 
   delay( 1000 );
   time2string( textstring, mytime );
   display_string( 3, textstring );
-  porte* = ticks;
+  *porte = ticks;
   display_update();
   tick( &mytime );
   ticks++;
