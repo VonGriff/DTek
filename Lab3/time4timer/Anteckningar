@@ -1,0 +1,36 @@
+Timer1-5 reg map http://ww1.microchip.com/downloads/en/DeviceDoc/61143H.pdf p. 56
+
+http://www.microchip.com/wwwproducts/Devices.aspx?product=PIC32MX320F128H 8MHz/31KHz oscillator
+
+Om timers
+http://ww1.microchip.com/downloads/en/DeviceDoc/61105F.pdf
+
+Type A inställning (binärt)
+1xxx x--- 1-?? --0-
+SET 0x8080
+CLR 2
+
+Type B inställning
+1-x- ---- 1??? ?-0-
+set 0x8080
+CLR 2
+
+Med 256:1 scaler så är 3,125 (0xC35) 800,000 tick, 0.1s på en 8MHz oscillator.
+
+
+NEWSFLASH! (Skriver detta uppifrån och ner, fuck ändringar) Upptäckte 
+https://www.kth.se/social/files/56090ca5f2765444ee4550ba/lecture6-spp2.pdf sid 8 (4)
+Timer 2 (Typ B) kör på 80MHz  IFS0 är en grej för interrupts
+PRx är en grej för att sätta timeout-tak.
+TMRx har timervärdet just nu.
+
+256:1 scaler ger 31,250(0x7A12) = 8,000,000 ticks = 0.1s på 80MHz oscillator.
+T2CONSET = 0x80F0; //1-x- ---- 1111 x-x-
+T2CONCLR = 0x000A; //x-x- ---- xxxx 0-0-
+PR2 = 0x7A12;
+
+Utan prescaler 8,000,000 ticks:
+T2CONSET = 0x8088; //1-x- ---- 1xxx 1-x-
+T2CONCLR = 0x0072; //x-x- ---- x000 x-0-
+PR2 = 0x1200; //PR23 = 0x7A1200
+PR3 = 0x007A;

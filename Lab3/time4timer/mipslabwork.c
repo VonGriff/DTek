@@ -32,6 +32,11 @@ void labinit( void )
   TRISDSET = 0xFE0; //Set bits 11-5
   //TRISD = TRISD & 0xF01F;
   //TRISD += 0xFE0;
+
+  T2CONSET = 0x80F0; //1-x- ---- 1111 x-x-
+  T2CONCLR = 0x000A; //x-x- ---- xxxx 0-0-
+  PR2 = 0x7A12;
+  IEC(0) = (1<<8);
   return;
 }
 
@@ -41,8 +46,16 @@ void labinit( void )
 void labwork( void )
 {
   volatile int* porte = (int*) 0xbf886110;
+  times = 0;
+  
+  while(times!=10){
+    while (!(IFS(0) & (1 << 8))) {nop();}
+    times++;
+    IFS(0) = 0;
+  }
 
-  delay( 1000 );
+  //delay( 1000 );
+  
   int btns = getbtns();
   if (btns>0) {
     if (btns > 3) {//btn 4 is pressed
@@ -66,10 +79,11 @@ void labwork( void )
         mytime += sw;
     }
   }
+  
   time2string( textstring, mytime );
   display_string( 3, textstring );
   display_update();
   *porte = *porte + 1;
-  tick( &mytime );
+  //tick( &mytime );
   display_image(96, icon);
 }
