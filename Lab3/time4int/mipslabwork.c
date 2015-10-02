@@ -16,15 +16,28 @@
 
 #define T2CONCLR  PIC32_R(0x0804)
 #define PR3 PIC32_R(0x0A20)
+#define IEC0SET PIC32_R(0xBF881068)
+#define IPC2SET PIC32_R(0xBF8810B8)
 
 int mytime = 0x5957;
+int prime = 1234567;
 int timeoutcount = 0;
 
 char textstring[] = "text, more text, and even more text!";
 
 /* Interrupt Service Routine */
-void user_isr( void )
-{
+void user_isr( void ) {
+  if (IFS(0)&0x100) {
+    timeoutcount++;
+    IFS(0) = 0;
+  }
+  if (timeoutcount == 10) {
+    time2string( textstring, mytime );
+    display_string( 3, textstring );
+    display_update();
+    tick( &mytime );
+    timeoutcount = 0;
+  }
   return;
 }
 
@@ -39,54 +52,23 @@ void labinit( void )
   T2CONCLR = 0x000A; //x-x- ---- xxxx 0-0-  --------||--------
   
   PR2 = 0x7A12; //                          --------||--------
-
-  T2CONSET = 0x8000; //Start timer
+  
+  //interruptstuff
+  IEC(0) = 0x0100;
+  IPC(2) = 0x001F;
+  //IEC0SET = 0x0100;
+  //IPC2SET = 0x001F;
+  enable_interrupt();
+  T2CONSET = 0x8000; //Start the timer 
+  //IFS(0) = 0x100;
   return;
 }
 
 
 
 /* This function is called repetitively from the main program */
-void labwork( void )
-{
-  volatile int* porte = (int*) 0xbf886110;
-  if (IFS(0)&0x0100) {
-    timeoutcount++;
-    IFS(0) = 0;
-  }
-  
-  int btns = getbtns();
-  if (btns>0) {
-    if (btns > 3) {//btn 4 is pressed
-        int sw = getsw();
-        sw = sw << 12;
-        mytime = mytime & 0x0FFF;
-        mytime += sw;
-    }
-    btns = btns & 3;
-    if (btns > 1) {//btn 3 is pressed
-        int sw = getsw();
-        sw = sw << 8;
-        mytime = mytime & 0xF0FF;
-        mytime += sw;
-    }
-    btns = btns & 1;
-    if (btns == 1) {//btn 2 is pressed
-        int sw = getsw();
-        sw = sw << 4;
-        mytime = mytime & 0xFF0F;
-        mytime += sw;
-    }
-  }
-
-  if(timeoutcount == 10) {
-    time2string( textstring, mytime );
-    display_string( 3, textstring );
-    display_update();
-    tick( &mytime );
-    *porte = *porte + 1;
-    timeoutcount = 0;
-  }
-
-  display_image(96, icon);
+void labwork( void ) {
+  prime = nextprime( prime );
+  display_string( 0, itoaconv( prime ) );
+  display_update();
 }
