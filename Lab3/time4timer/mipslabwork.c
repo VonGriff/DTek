@@ -15,6 +15,7 @@
 #include "mipslab.h"  /* Declatations for these labs */
 
 #define T2CONCLR  PIC32_R(0x0804)
+#define PR3 PIC32_R(0x0A20)
 
 int mytime = 0x5957;
 
@@ -32,31 +33,27 @@ void labinit( void )
   volatile int* trise = (int*) 0xbf886100;
   *trise = *trise & 0xFFFFFF00; //set the last 8 bits to 0.
   TRISDSET = 0xFE0; //Set bits 11-5
-  //TRISD = TRISD & 0xF01F;
-  //TRISD += 0xFE0;
 
-  T2CONSET = 0x80F0; //1-x- ---- 1111 x-x-
-  T2CONCLR = 0x000A; //x-x- ---- xxxx 0-0-
-  PR2 = 0x7A12;
-  IEC(0) = (1<<8);
+  T2CONSET = 0x0008; //x-x- ---- xxxx 1-x- From timer-ref.sheet
+  T2CONCLR = 0x0072; //x-x- ---- x000 x-0-  --------||--------
+
+  PR2 = 0x1200; //PR23 = 0x7A1200           --------||--------	   
+  PR3 = 0x007A; //                          --------||--------
+  T2CONSET = 0x8000; //Start the timer      --------||--------
   return;
 }
 
 
+int timeoutcount = 0;
 
 /* This function is called repetitively from the main program */
 void labwork( void )
 {
   volatile int* porte = (int*) 0xbf886110;
-  int times = 0;
-  
-  while(times!=10){
-    while (!(IFS(0) & (1 << 8)));
-    times++;
+  if (IFS(0)) {
+    timeoutcount++;
     IFS(0) = 0;
   }
-
-  //delay( 1000 );
   
   int btns = getbtns();
   if (btns>0) {
@@ -81,11 +78,15 @@ void labwork( void )
         mytime += sw;
     }
   }
-  
-  time2string( textstring, mytime );
-  display_string( 3, textstring );
-  display_update();
-  *porte = *porte + 1;
-  //tick( &mytime );
+
+  if(timeoutcount == 10) {
+    time2string( textstring, mytime );
+    display_string( 3, textstring );
+    display_update();
+    tick( &mytime );
+    *porte = *porte + 1;
+    timeoutcount = 0;
+  }
+
   display_image(96, icon);
 }
