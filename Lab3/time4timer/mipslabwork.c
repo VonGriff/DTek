@@ -14,6 +14,8 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
 
+#define T2CONCLR  PIC32_R(0x0804)
+
 int mytime = 0x5957;
 
 char textstring[] = "text, more text, and even more text!";
@@ -46,7 +48,7 @@ void labinit( void )
 void labwork( void )
 {
   volatile int* porte = (int*) 0xbf886110;
-  times = 0;
+  int times = 0;
   
   while(times!=10){
     while (!(IFS(0) & (1 << 8))) {nop();}
