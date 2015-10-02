@@ -51,7 +51,7 @@ void labwork( void )
   int times = 0;
   
   while(times!=10){
-    while (!(IFS(0) & (1 << 8))) {nop();}
+    while (!(IFS(0) & (1 << 8)));
     times++;
     IFS(0) = 0;
   }
